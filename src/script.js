@@ -1,20 +1,28 @@
 import * as THREE from 'three';
-
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import init from './init';
 
 import './style.css';
 
 const { sizes, camera, scene, canvas, controls, renderer } = init();
 
-camera.position.z = 3;
+camera.position.set(0, 2, 5);
 
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({
-	color: 'gray',
-	wireframe: true,
+const hemiLight = new THREE.HemisphereLight('#ffffff', '#ffffff', 0.61);
+hemiLight.position.set(0, 50, 0);
+scene.add(hemiLight);
+
+const objLoader = new OBJLoader();
+
+const mtlLoader = new MTLLoader();
+mtlLoader.load('/models/obj.mtl', (mtl) => {
+	mtl.preload();
+	objLoader.setMaterials(mtl);
+	objLoader.load('/models/obj.obj', (root) => {
+		scene.add(root);
+	});
 });
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
 
 const tick = () => {
 	controls.update();
