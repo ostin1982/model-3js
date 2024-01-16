@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import init from './init';
 
 import './style.css';
@@ -19,35 +20,39 @@ dirLight.castShadow = true;
 dirLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
 scene.add(dirLight);
 
-const objLoader = new OBJLoader();
-
 const mtlLoader = new MTLLoader();
 mtlLoader.load('/models/obj.mtl', (mtl) => {
 	mtl.preload();
+	const objLoader = new OBJLoader();
 	objLoader.setMaterials(mtl);
-	objLoader.load('/models/obj.obj', (root) => {
-		scene.add(root);
+	objLoader.load('/models/obj.obj', (object) => {
+		scene.add(object);
 	});
 });
 
+const fbxLoader = new FBXLoader();
+fbxLoader.load('/models/fbx.fbx', (object) => {
+	scene.add(object);
+});
+
+const clock = new THREE.Clock();
 const tick = () => {
 	controls.update();
 	renderer.render(scene, camera);
+	const elapsedTime = clock.getElapsedTime();
+	camera.position.x = Math.cos(elapsedTime);
+	camera.position.y = Math.sin(elapsedTime);
 	window.requestAnimationFrame(tick);
 };
 tick();
 
-/** Базовые обпаботчики событий длы поддержки ресайза */
 window.addEventListener('resize', () => {
-	// Обновляем размеры
 	sizes.width = window.innerWidth;
 	sizes.height = window.innerHeight;
 
-	// Обновляем соотношение сторон камеры
 	camera.aspect = sizes.width / sizes.height;
 	camera.updateProjectionMatrix();
 
-	// Обновляем renderer
 	renderer.setSize(sizes.width, sizes.height);
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 	renderer.render(scene, camera);
