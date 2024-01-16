@@ -13,6 +13,12 @@ const hemiLight = new THREE.HemisphereLight('#ffffff', '#ffffff', 0.61);
 hemiLight.position.set(0, 50, 0);
 scene.add(hemiLight);
 
+const dirLight = new THREE.DirectionalLight('#ffffff', 0.54);
+dirLight.position.set(-8, 12, 8);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
+scene.add(dirLight);
+
 const objLoader = new OBJLoader();
 
 const mtlLoader = new MTLLoader();
